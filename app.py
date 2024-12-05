@@ -8,12 +8,12 @@ from flasgger import swag_from
 from swagger.swagger_config import init_swagger
 
 
-# Load environment variables 
+#Load environment variables 
 load_dotenv()
 
 app = Flask(__name__)
 
-# JWT Configuration
+#JWT Configuration
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 DB_PATH = os.getenv('SQLITE_DB_PATH')
 PORT = int(os.getenv('PORT', 5000))
@@ -22,7 +22,7 @@ jwt = JWTManager(app)
 #Initialize Swagger
 init_swagger(app)
 
-# Database creation
+#Database creation
 def init_db():
     with sqlite3.connect(DB_PATH) as conn:
         cur = conn.cursor()
@@ -99,7 +99,7 @@ def homepoint():
         ]
     })
 
-# View all cars
+#View all cars
 @app.route("/cars", methods=['GET'])
 @swag_from("swagger/cars.yaml")
 def show_all_cars():
@@ -186,7 +186,63 @@ def delete_car(car_id):
         return jsonify({
             "error": "OOPS! Something went wrong :(", "details": str(e)
             }), 500
+    
+
+#Get list of rented cars 
+@app.route("/rented-cars", methods=['GET'])
+@swag_from("swagger/rented_cars.yaml")
+def rented_cars():
+    try:
+        with sqlite3.connect(DB_PATH) as conn: 
+
+            #Access rows as dictionaries
+            conn.row_factory = sqlite3.Row
+
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM cars where is_rented = 1")
+            rows = cur.fetchall()
         
+        #Convert rows to a list of dictionaries
+        cars = [dict(row) for row in rows]
+
+        #Check if no cars are rented
+        if not cars:
+            return jsonify({
+                "message": "No cars are rented"
+            }), 404 
+        
+        #Return the list of rented cars
+        return jsonify(cars), 200
+    
+    except Exception as e: 
+        return jsonify({
+            "error": "OOPS! Something went wrong :(", "details": str(e)
+            }), 500
+    
+
+#Get total price of rented cars 
+@app.route("/totalprice", methods=['GET'])
+@swag_from("swagger/totalprice.yaml")
+def totalprice():
+    try:
+        with sqlite3.connect(DB_PATH) as conn: 
+            cur = conn.cursor()
+            cur.execute("SELECT SUM(price) FROM cars WHERE is_rented = 1")
+            total = cur.fetchone()[0]
+
+            #Check if no cars are rented (Total is None)
+            if total is None:
+                total = 0 #Default to 0
+
+        return jsonify({
+        "message": f"Total price of rented cars: {total}"
+    }), 200
+
+    except Exception as e: 
+        return jsonify({
+            "error": "OOPS! Something went wrong :(", "details": str(e)
+        }), 500
+
 
 # FILTER 
 
@@ -283,7 +339,7 @@ def color_filter(color):
             "error": "OOPS! Something went wrong :(", "details": str(e)
             }), 500
 
-# Filter on price 
+#Filter on price 
 @app.route("/price-filter/<int:min_price>/<int:max_price>", methods=['GET'])
 @swag_from("swagger/filter_car_price.yaml")
 def price_filter(min_price, max_price):
@@ -313,5 +369,8 @@ def price_filter(min_price, max_price):
         return jsonify({
             "error": "OOPS! Something went wrong :(", "details": str(e)
             }), 500
-    
-app.run(debug=True)
+
+
+
+if __name__ == "__main__":    
+    app.run(debug=True)

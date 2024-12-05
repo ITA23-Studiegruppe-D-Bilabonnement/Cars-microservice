@@ -103,72 +103,89 @@ def homepoint():
 @app.route("/cars", methods=['GET'])
 @swag_from("swagger/cars.yaml")
 def show_all_cars():
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.row_factory = sqlite3.Row  # This allows rows to be accessed as dictionaries
-        c = conn.cursor()
-        c.execute("SELECT * FROM cars")
-        cars = [dict(row) for row in c.fetchall()]
-    conn.close
-    return jsonify(cars), 200 
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.row_factory = sqlite3.Row  #This allows rows to be accessed as dictionaries
+            c = conn.cursor()
+            c.execute("SELECT * FROM cars")
+            cars = [dict(row) for row in c.fetchall()]
+        conn.close
+        return jsonify(cars), 200 
+    except Exception as e: #Catch errors
+        return jsonify({
+            "error": "OOPS! Something went wrong :(", "details": str(e)
+            }), 500
 
 #Add a car to the database
 @app.route("/add-car", methods=['POST'])
 @swag_from("swagger/add_car.yaml")
 def add_car():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    # Check that all data has been inserted
-    required_fields = ["car_brand", "car_model", "price", "color", "engine_type", "mileage"]
-    for field in required_fields: 
-        if field not in data: 
-            return jsonify({"error": f"'{field}' is required"}), 400
-        
-    # Extract fields from the request
-    car_brand = data["car_brand"]
-    car_model = data["car_model"]
-    is_rented = data.get("is_rented", 0)  # Default to 0 (False)
-    price = data["price"]
-    color = data["color"]
-    engine_type = data["engine_type"]
-    mileage = data["mileage"]
- 
-    with sqlite3.connect(DB_PATH) as conn:
-        cur = conn.cursor()
-        cur.execute('''
-            INSERT INTO cars (
-                    car_brand, 
-                    car_model, 
-                    is_rented, 
-                    price, 
-                    color, 
-                    engine_type, 
-                    mileage
-                    ) VALUES (?,?,?,?,?,?,?) ''', (car_brand, car_model, is_rented, price, color, engine_type, mileage))
+        #Check that all data has been inserted
+        required_fields = ["car_brand", "car_model", "price", "color", "engine_type", "mileage"]
+        for field in required_fields: 
+            if field not in data or not data[field]: 
+                return jsonify({
+                    "error": f"'{field}' is required"
+                    }), 400
             
-        conn.commit()
-        return jsonify({
-            "message": "Car added successfully"
-            }), 200
-#Måske noget error handling?? Spørg rassermus!
+        #Extract fields from the request
+        car_brand = data["car_brand"]
+        car_model = data["car_model"]
+        is_rented = data.get("is_rented", 0)  #Default to 0 (False)
+        price = data["price"]
+        color = data["color"]
+        engine_type = data["engine_type"]
+        mileage = data["mileage"]
+    
+        with sqlite3.connect(DB_PATH) as conn:
+            cur = conn.cursor()
+            cur.execute('''
+                INSERT INTO cars (
+                        car_brand, 
+                        car_model, 
+                        is_rented, 
+                        price, 
+                        color, 
+                        engine_type, 
+                        mileage
+                        ) VALUES (?,?,?,?,?,?,?) ''', (car_brand, car_model, is_rented, price, color, engine_type, mileage))
+                
+            conn.commit()
+            return jsonify({
+                "message": "Car added successfully"
+                }), 200
         
+    except Exception as e:  # Catch other possible errors
+        return jsonify({
+            "error": "OOPS! Something went wrong :(", "details": str(e)
+            }), 500
 
 # Delete car from database 
 @app.route("/delete-car/<int:car_id>", methods=['DELETE'])
 @swag_from("swagger/delete_car.yaml")
 def delete_car(car_id):
-    with sqlite3.connect(DB_PATH) as conn:
-        cur = conn.cursor()
-        cur.execute("DELETE FROM cars WHERE car_id = ?", (car_id,))
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM cars WHERE car_id = ?", (car_id,))
 
-        #Check to see if the database was affected
-        if cur.rowcount == 0:
+            #Check to see if the database was affected
+            if cur.rowcount == 0:
+                return jsonify({
+                    "Error": "Couldnt find car"
+                }), 400
+            
             return jsonify({
-                "Error": "Couldnt find car"
-            }), 400
+                "message": f"Car with ID: {car_id} succesfully deleted"
+                }), 200
         
+    except Exception as e:  #General error
         return jsonify({
-            "message": f"Car with ID: {car_id} succesfully deleted"
-            }), 200
+            "error": "OOPS! Something went wrong :(", "details": str(e)
+            }), 500
         
 
 # FILTER 
@@ -177,74 +194,124 @@ def delete_car(car_id):
 @app.route("/brand-filter/<car_brand>", methods=['GET'])
 @swag_from("swagger/filter_car_brand.yaml")
 def brand_filter(car_brand):
-    with sqlite3.connect(DB_PATH) as conn:
-        
-        #Access rows as dictionaries
-        conn.row_factory = sqlite3.Row 
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            
+            #Access rows as dictionaries
+            conn.row_factory = sqlite3.Row 
 
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM cars WHERE car_brand = ?", (car_brand,))
-        rows = cur.fetchall()
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM cars WHERE car_brand = ?", (car_brand,))
+            rows = cur.fetchall()
 
-    #Convert rows to a list of dictionaries
-    cars = [dict(row) for row in rows]
+        #Convert rows to a list of dictionaries
+        cars = [dict(row) for row in rows]
 
-    #Return the filtered cars
-    return jsonify(cars), 200
+        #Check if no cars match the filter
+        if not cars:
+            return jsonify({
+                "message": f"No cars found for brand: '{car_brand}'"
+                }), 404
+
+        #Return the filtered cars
+        return jsonify(cars), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "OOPS! Something went wrong :(", "details": str(e)
+            }), 500
 
 #Filter on engine type
 @app.route("/engine-filter/<engine_type>", methods=['GET'])
 @swag_from("swagger/filter_car_engine.yaml")
 def engine_filter(engine_type):
-    with sqlite3.connect(DB_PATH) as conn:
+    try: 
+        with sqlite3.connect(DB_PATH) as conn:
 
-        #Access rows as dictionaries
-        conn.row_factory = sqlite3.Row
+            #Access rows as dictionaries
+            conn.row_factory = sqlite3.Row
 
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM cars WHERE engine_type = ?", (engine_type,))
-        rows = cur.fetchall()
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM cars WHERE engine_type = ?", (engine_type,))
+            rows = cur.fetchall()
 
-    #Convert rows to a list of dictionaries
-    cars = [dict(row) for row in rows]
+        #Convert rows to a list of dictionaries
+        cars = [dict(row) for row in rows]
 
-    return jsonify(cars), 200
+        #Check if no cars match the filter
+        if not cars:
+            return jsonify({
+                "message": f"No cars found with engine: '{engine_type}'"
+                }), 404
+        
+        #Return the filtered cars
+        return jsonify(cars), 200
+    
+    except Exception as e: 
+        return jsonify({
+            "error": "OOPS! Something went wrong :(", "details": str(e)
+            }), 500
 
 #Filter on color 
 @app.route("/color-filter/<color>", methods=['GET'])
 @swag_from("swagger/filter_car_color.yaml")
 def color_filter(color):
-    with sqlite3.connect(DB_PATH) as conn:
+    try: 
+        with sqlite3.connect(DB_PATH) as conn:
+        
+            #Access rows as dictionaries
+            conn.row_factory = sqlite3.Row
+
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM cars WHERE color = ?", (color,))
+            rows = cur.fetchall()
+
+        #Convert rows to a list of dictionaries
+        cars = [dict(row) for row in rows]
+
+        #Check if no cars match the filter
+        if not cars: 
+            return jsonify({
+                "message": f"No cars found with the color: '{color}'"
+                }), 404 
+        
+        #Return the filtered cars
+        return jsonify(cars), 200
     
-        #Access rows as dictionaries
-        conn.row_factory = sqlite3.Row
-
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM cars WHERE color = ?", (color,))
-        rows = cur.fetchall()
-
-    #Convert rows to a list of dictionaries
-    cars = [dict(row) for row in rows]
-
-    return jsonify(cars), 200
+    except Exception as e:
+        return jsonify({
+            "error": "OOPS! Something went wrong :(", "details": str(e)
+            }), 500
 
 # Filter on price 
 @app.route("/price-filter/<int:min_price>/<int:max_price>", methods=['GET'])
 @swag_from("swagger/filter_car_price.yaml")
 def price_filter(min_price, max_price):
-    with sqlite3.connect(DB_PATH) as conn:
+    try: 
+        with sqlite3.connect(DB_PATH) as conn:
 
-        #Access rows as dictionaries
-        conn.row_factory = sqlite3.Row
+            #Access rows as dictionaries
+            conn.row_factory = sqlite3.Row
 
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM cars WHERE price BETWEEN ? AND ?", (min_price, max_price))
-        rows = cur.fetchall()
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM cars WHERE price BETWEEN ? AND ?", (min_price, max_price))
+            rows = cur.fetchall()
 
-    #Convert rows to a list of dictionaries
-    cars = [dict(row) for row in rows]
+        #Convert rows to a list of dictionaries
+        cars = [dict(row) for row in rows]
 
-    return jsonify(cars), 200
+        #Check if no cars match the filter
+        if not cars: 
+            return jsonify({
+                "message": f"No cars found within price range: '{min_price}' and '{max_price}'"
+            }), 404
+        
+        #Return the filtered cars
+        return jsonify(cars), 200
     
- 
+    except Exception as e:
+        return jsonify({
+            "error": "OOPS! Something went wrong :(", "details": str(e)
+            }), 500
+    
 app.run(debug=True)

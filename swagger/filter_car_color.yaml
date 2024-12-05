@@ -1,0 +1,63 @@
+tags:
+  - name: Cars
+summary: Filter cars by color
+description: Retrieves a list of cars that match the specified color.
+parameters:
+  - in: path
+    name: color
+    required: true
+    schema:
+      type: string
+      example: "Red"
+    description: The color of the cars to filter.
+responses:
+  200:
+    description: List of cars matching the specified color
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          car_id:
+            type: integer
+            example: 1
+          car_brand:
+            type: string
+            example: "Toyota"
+          car_model:
+            type: string
+            example: "Camry"
+          is_rented:
+            type: boolean
+            example: false
+          price:
+            type: integer
+            example: 25000
+          color:
+            type: string
+            example: "Red"
+          engine_type:
+            type: string
+            example: "El"
+          mileage:
+            type: integer
+            example: 15000
+  400:
+    description: Invalid color parameter
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid color parameter"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "OOPS! Something went wrong :("
+        message:
+          type: string
+          example: "Error details"

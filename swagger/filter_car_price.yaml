@@ -1,0 +1,70 @@
+tags:
+  - name: Cars
+summary: Filter cars by price range
+description: Retrieves a list of cars with prices within the specified range.
+parameters:
+  - in: path
+    name: min_price
+    required: true
+    schema:
+      type: integer
+      example: 10000
+    description: The minimum price of the cars to filter.
+  - in: path
+    name: max_price
+    required: true
+    schema:
+      type: integer
+      example: 30000
+    description: The maximum price of the cars to filter.
+responses:
+  200:
+    description: List of cars matching the price range
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          car_id:
+            type: integer
+            example: 1
+          car_brand:
+            type: string
+            example: "Toyota"
+          car_model:
+            type: string
+            example: "Camry"
+          is_rented:
+            type: boolean
+            example: false
+          price:
+            type: integer
+            example: 25000
+          color:
+            type: string
+            example: "Red"
+          engine_type:
+            type: string
+            example: "Benzin"
+          mileage:
+            type: integer
+            example: 15000
+  400:
+    description: Invalid price range
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid price range"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "OOPS! Something went wrong :("
+        message:
+          type: string
+          example: "Error details"

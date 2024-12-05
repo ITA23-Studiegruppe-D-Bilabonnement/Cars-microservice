@@ -5,6 +5,7 @@ import os
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity 
 from dotenv import load_dotenv
 from flasgger import swag_from 
+from swagger.swagger_config import init_swagger
 
 
 # Load environment variables 
@@ -18,6 +19,8 @@ DB_PATH = os.getenv('SQLITE_DB_PATH')
 PORT = int(os.getenv('PORT', 5000))
 jwt = JWTManager(app)
 
+#Initialize Swagger
+init_swagger(app)
 
 # Database creation
 def init_db():
@@ -98,6 +101,7 @@ def homepoint():
 
 # View all cars
 @app.route("/cars", methods=['GET'])
+@swag_from("swagger/cars.yaml")
 def show_all_cars():
     with sqlite3.connect(DB_PATH) as conn:
         conn.row_factory = sqlite3.Row  # This allows rows to be accessed as dictionaries
@@ -109,6 +113,7 @@ def show_all_cars():
 
 #Add a car to the database
 @app.route("/add-car", methods=['POST'])
+@swag_from("swagger/add_car.yaml")
 def add_car():
     data = request.get_json()
 
@@ -149,6 +154,7 @@ def add_car():
 
 # Delete car from database 
 @app.route("/delete-car/<int:car_id>", methods=['DELETE'])
+@swag_from("swagger/delete_car.yaml")
 def delete_car(car_id):
     with sqlite3.connect(DB_PATH) as conn:
         cur = conn.cursor()
@@ -169,6 +175,7 @@ def delete_car(car_id):
 
 #Filter on car brand
 @app.route("/brand-filter/<car_brand>", methods=['GET'])
+@swag_from("swagger/filter_car_brand.yaml")
 def brand_filter(car_brand):
     with sqlite3.connect(DB_PATH) as conn:
         
@@ -187,6 +194,7 @@ def brand_filter(car_brand):
 
 #Filter on engine type
 @app.route("/engine-filter/<engine_type>", methods=['GET'])
+@swag_from("swagger/filter_car_engine.yaml")
 def engine_filter(engine_type):
     with sqlite3.connect(DB_PATH) as conn:
 
@@ -204,6 +212,7 @@ def engine_filter(engine_type):
 
 #Filter on color 
 @app.route("/color-filter/<color>", methods=['GET'])
+@swag_from("swagger/filter_car_color.yaml")
 def color_filter(color):
     with sqlite3.connect(DB_PATH) as conn:
     
@@ -221,6 +230,7 @@ def color_filter(color):
 
 # Filter on price 
 @app.route("/price-filter/<int:min_price>/<int:max_price>", methods=['GET'])
+@swag_from("swagger/filter_car_price.yaml")
 def price_filter(min_price, max_price):
     with sqlite3.connect(DB_PATH) as conn:
 

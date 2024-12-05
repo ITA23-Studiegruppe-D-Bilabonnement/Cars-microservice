@@ -1,0 +1,40 @@
+tags:
+  - name: Cars
+summary: Delete a car by ID
+description: Deletes a car from the database using its unique car ID.
+parameters:
+  - in: path
+    name: car_id
+    required: true
+    schema:
+      type: integer
+      example: 1
+    description: The ID of the car to be deleted.
+responses:
+  200:
+    description: Car successfully deleted
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Car with ID: 1 successfully deleted"
+  400:
+    description: Car ID not found
+    schema:
+      type: object
+      properties:
+        Error:
+          type: string
+          example: "Couldnt find car"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "OOPS! Something went wrong :("
+        message:
+          type: string
+          example: "Error details"

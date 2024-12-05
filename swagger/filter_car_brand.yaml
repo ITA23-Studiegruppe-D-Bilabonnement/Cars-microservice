@@ -1,0 +1,63 @@
+tags:
+  - name: Cars
+summary: Filter cars by brand
+description: Retrieves a list of cars that match the specified brand.
+parameters:
+  - in: path
+    name: car_brand
+    required: true
+    schema:
+      type: string
+      example: "Toyota"
+    description: The brand of the cars to filter.
+responses:
+  200:
+    description: List of cars matching the brand
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          car_id:
+            type: integer
+            example: 1
+          car_brand:
+            type: string
+            example: "Toyota"
+          car_model:
+            type: string
+            example: "Camry"
+          is_rented:
+            type: boolean
+            example: false
+          price:
+            type: integer
+            example: 25000
+          color:
+            type: string
+            example: "Red"
+          engine_type:
+            type: string
+            example: "Hybrid"
+          mileage:
+            type: integer
+            example: 15000
+  400:
+    description: Invalid brand parameter
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid brand parameter"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "OOPS! Something went wrong :("
+        message:
+          type: string
+          example: "Error details"

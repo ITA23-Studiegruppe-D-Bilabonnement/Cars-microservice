@@ -1,0 +1,67 @@
+tags:
+  - name: Cars
+summary: Add a new car
+description: Adds a new car to the database. All fields are required except for `is_rented`, which defaults to `false`.
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - car_brand
+        - car_model
+        - price
+        - color
+        - engine_type
+        - mileage
+      properties:
+        car_brand:
+          type: string
+          example: "Toyota"
+        car_model:
+          type: string
+          example: "Corolla"
+        is_rented:
+          type: boolean
+          example: false
+        price:
+          type: integer
+          example: 20000
+        color:
+          type: string
+          example: "White"
+        engine_type:
+          type: string
+          example: "Hybrid"
+        mileage:
+          type: integer
+          example: 12000
+responses:
+  200:
+    description: Car successfully added
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Car added successfully"
+  400:
+    description: Missing required fields
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "'car_brand' is required"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "OOPS! Something went wrong :("
+        message:
+          type: string
+          example: "Error details"

@@ -1,0 +1,47 @@
+tags:
+  - name: Cars
+summary: Retrieve all cars
+description: Returns a list of all cars available in the database.
+responses:
+  200:
+    description: Successfully retrieved the list of cars
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          car_id:
+            type: integer
+            example: 1
+          car_brand:
+            type: string
+            example: "Toyota"
+          car_model:
+            type: string
+            example: "Camry"
+          is_rented:
+            type: boolean
+            example: false
+          price:
+            type: integer
+            example: 25000
+          color:
+            type: string
+            example: "Red"
+          engine_type:
+            type: string
+            example: "Benzin"
+          mileage:
+            type: integer
+            example: 15000
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "OOPS! Something went wrong :("
+        message:
+          type: string
+          example: "Error details"

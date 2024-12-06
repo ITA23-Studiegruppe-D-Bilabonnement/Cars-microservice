@@ -1,0 +1,46 @@
+tags:
+  - name: Cars
+summary: Update the rented status of a car
+description: Marks a car as rented by updating its `is_rented` status to 1 in the database.
+parameters:
+  - in: path
+    name: car_id
+    required: true
+    schema:
+      type: integer
+      example: 1
+    description: The ID of the car to update.
+responses:
+  200:
+    description: Successfully updated the car's rented status
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Car with ID 1 is now marked as rented"
+  400:
+    description: Car not found or invalid ID
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Invalid car ID or car not found"
+  500:
+    description: Internal server error
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "OOPS! Something went wrong :("
+            details:
+              type: string
+              example: "Error details"

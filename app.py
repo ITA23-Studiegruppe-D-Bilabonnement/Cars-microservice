@@ -15,6 +15,7 @@ app = Flask(__name__)
 
 #JWT Configuration
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+subscription_microservice_url = os.getenv('SUBSCRIPTION_MICROSERVICE')
 DB_PATH = os.getenv('SQLITE_DB_PATH')
 PORT = int(os.getenv('PORT', 5000))
 jwt = JWTManager(app)
@@ -73,6 +74,22 @@ def homepoint():
                 "PARAMETER": "car_id"
             },
             {
+                "PATH": "/update-status/car_id",
+                "METHOD": "PUT",
+                "DESCRIPTION": "Updates the rented status of the car",
+                "PARAMETER": "car_id"
+            },
+            {
+                "PATH": "/rented-cars",
+                "METHOD": "GET",
+                "DESCRIPTION": "Returns a list of all rented cars"
+            },
+            {
+                "PATH": "/totalprice",
+                "METHOD": "GET",
+                "DESCRIPTION": "Returns the total price of all rented cars"
+            },
+            {
                 "PATH": "/brand-filter/car_brand",
                 "METHOD": "GET",
                 "DESCRIPTION": "Filters list of cars from car brand",
@@ -110,8 +127,10 @@ def show_all_cars():
             c.execute("SELECT * FROM cars")
             cars = [dict(row) for row in c.fetchall()]
         conn.close
+
         return jsonify(cars), 200 
-    except Exception as e: #Catch errors
+    
+    except Exception as e: 
         return jsonify({
             "error": "OOPS! Something went wrong :(", "details": str(e)
             }), 500
@@ -158,12 +177,12 @@ def add_car():
                 "message": "Car added successfully"
                 }), 200
         
-    except Exception as e:  # Catch other possible errors
+    except Exception as e:  #Catch other possible errors
         return jsonify({
             "error": "OOPS! Something went wrong :(", "details": str(e)
             }), 500
 
-# Delete car from database 
+#Delete car from database 
 @app.route("/delete-car/<int:car_id>", methods=['DELETE'])
 @swag_from("swagger/delete_car.yaml")
 def delete_car(car_id):
@@ -182,11 +201,29 @@ def delete_car(car_id):
                 "message": f"Car with ID: {car_id} succesfully deleted"
                 }), 200
         
-    except Exception as e:  #General error
+    except Exception as e: 
         return jsonify({
             "error": "OOPS! Something went wrong :(", "details": str(e)
             }), 500
     
+
+#Update rented status
+@app.route("/update-status/<int:car_id>", methods=['PUT'])
+@swag_from("swagger/update_status.yaml")
+def update_rented_status(car_id): 
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            cur = conn.cursor()
+            cur.execute("UPDATE cars SET is_rented = 1 WHERE car_id = ?", (car_id,))
+            conn.commit()
+
+        return jsonify({"message": f"Car with ID {car_id} is now marked as rented"}), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "OOPS! Something went wrong :(", "details": str(e)
+            }), 500
+
 
 #Get list of rented cars 
 @app.route("/rented-cars", methods=['GET'])

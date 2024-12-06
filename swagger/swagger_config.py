@@ -25,6 +25,21 @@ swagger_config = {
                     "spec": '/swagger/delete_car.yaml'
                 },
                 {
+                    "endpoint": 'update status on car',
+                    "route": '/update-status/<int:car_id>',
+                    "spec": '/swagger/update_status.yaml'
+                },
+                {
+                    "endpoint": 'list of rented cars',
+                    "route": '/rented-cars',
+                    "spec": '/swagger/rented_cars.yaml'
+                },
+                {
+                    "endpoint": 'total price of rented cars',
+                    "route": '/totalprice',
+                    "spec": '/swagger/totalprice.yaml'
+                },
+                {
                     "endpoint": 'filter on car brand',
                     "route": '/brand-filter/<car_brand>',
                     "spec": '/swagger/filter_car_brand.yaml'

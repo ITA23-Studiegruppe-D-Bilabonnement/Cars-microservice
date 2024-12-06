@@ -40,10 +40,10 @@ def init_db():
                     )""")
     conn.commit()
 
-# Initialize the database when the app starts
+#Initialize the database when the app starts
 init_db()
     
-# Homepoint 
+#Homepoint 
 @app.route("/")
 def homepoint():
     return jsonify({
@@ -214,7 +214,7 @@ def update_rented_status(car_id):
     try:
         with sqlite3.connect(DB_PATH) as conn:
             cur = conn.cursor()
-            cur.execute("UPDATE cars SET is_rented = NOT is_rented WHERE car_id = ?", (car_id,))
+            cur.execute("UPDATE cars SET is_rented = 1 WHERE car_id = ?", (car_id,))
             conn.commit()
 
         return jsonify({"message": f"Car with ID {car_id} is now marked as rented"}), 200

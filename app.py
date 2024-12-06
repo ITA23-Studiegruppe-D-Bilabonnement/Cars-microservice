@@ -207,14 +207,14 @@ def delete_car(car_id):
             }), 500
     
 
-#Update rented status
+#Update car status 
 @app.route("/update-status/<int:car_id>", methods=['PUT'])
 @swag_from("swagger/update_status.yaml")
 def update_rented_status(car_id): 
     try:
         with sqlite3.connect(DB_PATH) as conn:
             cur = conn.cursor()
-            cur.execute("UPDATE cars SET is_rented = 1 WHERE car_id = ?", (car_id,))
+            cur.execute("UPDATE cars SET is_rented = NOT is_rented WHERE car_id = ?", (car_id,))
             conn.commit()
 
         return jsonify({"message": f"Car with ID {car_id} is now marked as rented"}), 200

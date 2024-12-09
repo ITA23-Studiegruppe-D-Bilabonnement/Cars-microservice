@@ -123,9 +123,9 @@ def show_all_cars():
     try:
         with sqlite3.connect(DB_PATH) as conn:
             conn.row_factory = sqlite3.Row  #This allows rows to be accessed as dictionaries
-            c = conn.cursor()
-            c.execute("SELECT * FROM cars")
-            cars = [dict(row) for row in c.fetchall()]
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM cars")
+            cars = [dict(row) for row in cur.fetchall()]
         conn.close
 
         return jsonify(cars), 200 
@@ -205,7 +205,30 @@ def delete_car(car_id):
         return jsonify({
             "error": "OOPS! Something went wrong :(", "details": str(e)
             }), 500
-    
+
+#Get car from car ID
+@app.route("/car/<int:car_id>", methods=['GET'])
+def get_car(car_id):
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM cars WHERE car_id = ?", (car_id,))
+            row = cur.fetchone()
+
+            if row:
+                #If a car is found, return it to JSON:
+                return jsonify({
+                    "car_id": row[0],
+                    "car_brand": row[1],
+                    "car_model": row[2]
+                })
+            
+    except Exception as e:
+        return jsonify({
+            "error": "OOPS! Something went wrong :(", 
+            "details": str(e)
+        }), 500
+
 
 #Update car status 
 @app.route("/update-status/<int:car_id>", methods=['PUT'])
@@ -217,7 +240,7 @@ def update_rented_status(car_id):
             cur.execute("UPDATE cars SET is_rented = NOT is_rented WHERE car_id = ?", (car_id,))
             conn.commit()
 
-        return jsonify({"message": f"Car with ID {car_id} is now marked as rented"}), 200
+        return jsonify({"message": f"Car with ID {car_id} is now updated"}), 200
     
     except Exception as e:
         return jsonify({

@@ -1,0 +1,55 @@
+tags:
+  - name: Cars
+summary: Get list of rented cars
+description: Retrieves a list of all cars that are currently rented.
+responses:
+  200:
+    description: List of rented cars
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          car_id:
+            type: integer
+            example: 1
+          car_brand:
+            type: string
+            example: "Toyota"
+          car_model:
+            type: string
+            example: "Camry"
+          is_rented:
+            type: boolean
+            example: true
+          price:
+            type: integer
+            example: 25000
+          color:
+            type: string
+            example: "Red"
+          engine_type:
+            type: string
+            example: "Hybrid"
+          mileage:
+            type: integer
+            example: 15000
+  404:
+    description: No cars are rented
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "No cars are rented"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "OOPS! Something went wrong :("
+        details:
+          type: string
+          example: "Error details"

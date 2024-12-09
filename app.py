@@ -208,6 +208,7 @@ def delete_car(car_id):
 
 #Get car from car ID
 @app.route("/car/<int:car_id>", methods=['GET'])
+@swag_from("swagger/specific_car.yaml")
 def get_car(car_id):
     try:
         with sqlite3.connect(DB_PATH) as conn:

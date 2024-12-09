@@ -25,6 +25,12 @@ swagger_config = {
                     "spec": '/swagger/delete_car.yaml'
                 },
                 {
+                    "endpoint": 'get specific car',
+                    "route": '/car/<int:car_id>',
+                    "spec": '/swagger/specific_car.yaml'
+
+                },
+                {
                     "endpoint": 'update status on car',
                     "route": '/update-status/<int:car_id>',
                     "spec": '/swagger/update_status.yaml'

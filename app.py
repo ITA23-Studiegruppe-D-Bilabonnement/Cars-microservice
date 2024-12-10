@@ -212,17 +212,17 @@ def delete_car(car_id):
 def get_car(car_id):
     try:
         with sqlite3.connect(DB_PATH) as conn:
+            conn.row_factory = sqlite3.Row  # Access rows as dictionaries
             cur = conn.cursor()
             cur.execute("SELECT * FROM cars WHERE car_id = ?", (car_id,))
             row = cur.fetchone()
 
             if row:
                 #If a car is found, return it to JSON:
-                return jsonify({
-                    "car_id": row[0],
-                    "car_brand": row[1],
-                    "car_model": row[2]
-                })
+                return jsonify(dict(row)), 200
+            else:
+                # If no car is found, return a 404 error
+                return jsonify({"error": "Car not found"}), 400
             
     except Exception as e:
         return jsonify({

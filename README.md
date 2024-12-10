@@ -53,10 +53,51 @@ This Flask-based microservice provides an API for managing car data, including v
     - `200 OK`: Car successfully deleted.
     - `400 Bad Request`: Car with the specified ID was not found.
 
-**Example Request**:
-```bash
-DELETE /delete-car/1
-```
+---
+
+### **Get car by ID**
+
+- **URL**: `/car/<int:car_id>`
+- **Method**: GET
+- **Description**: Shows details of a car from the database by its unique ID.
+- **Response**: 
+    - `200 OK`: Returns car details.
+    - `400 Bad Request`: Car with the specified ID was not found. 
+
+---
+
+### **Update Car Status**
+
+- **URL**: `/update-status/<int:car_id>`
+- **Method**: PUT
+- **Description**: Toggles the rental status (`is_rented`) of a specific car by its unique ID.
+- **Response**:
+    - `200 OK`: Car rental status successfully updated.
+    - `500 Internal Server Error`: An error occurred while updating the car status.
+
+---
+
+### **Get List of Rented Cars**
+
+- **URL**: `/rented-cars`
+- **Method**: GET
+- **Description**: Retrieves a list of all cars currently rented.
+- **Response**:
+    - `200 OK`: Returns a list of rented cars in JSON format.
+    - `404 Not Found`: No cars are currently rented.
+    - `500 Internal Server Error`: An error occurred while retrieving the rented cars.
+
+---
+
+### **Get Total Price of Rented Cars**
+
+- **URL**: `/totalprice`
+- **Method**: GET
+- **Description**: Calculates and returns the total price of all currently rented cars.
+- **Response**:
+    - `200 OK`: Returns the total price of rented cars in JSON format.
+    - `500 Internal Server Error`: An error occurred while calculating the total price.
+    
 ---
 
 ### **Filter Cars by Brand**
@@ -67,10 +108,6 @@ DELETE /delete-car/1
 - **Response**:
     - `200 OK`: Returns a list of cars that match the specified brand.
 
-**Example Request**:
-```bash
-GET /brand-filter/Toyota
-```
 ---
 
 ### **Filter Cars by Engine Type**
@@ -81,10 +118,6 @@ GET /brand-filter/Toyota
 - **Response**:
     - `200 OK`: Returns a list of cars that match the specified engine type.
 
-**Example Request**:
-```bash
-GET /engine-filter/Hybrid
-```
 ---
 
 ### **Filter Cars by Color**
@@ -95,10 +128,6 @@ GET /engine-filter/Hybrid
 - **Response**:
     - `200 OK`: Returns a list of cars that match the specified color.
 
-**Example Request**:
-```bash
-GET /color-filter/Red
-```
 ---
 
 ### **Filter Cars by Price Range**
@@ -108,9 +137,5 @@ GET /color-filter/Red
 - **Description**: Retrieves a list of cars within a specified price range.
 - **Response**:
     - `200 OK`: Returns a list of cars that fall within the specified price range.
-
-**Example Request**:
-```bash
-GET /price-filter/15000/25000
 
 

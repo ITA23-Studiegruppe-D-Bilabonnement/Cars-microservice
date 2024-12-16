@@ -4,6 +4,34 @@ This Flask-based microservice provides an API for managing car data, including v
 
 ---
 
+# File structure
+```
+project/
+├── app.py                   
+├── swagger/                 
+│   ├── add_car.yaml          
+│   ├── cars.yaml           
+│   ├── specific_car.yaml
+│   ├── delete_car.yaml
+│   ├── rented_cars.yaml
+│   ├── update_status.yaml
+│   ├── totalprice.yaml
+│   ├── filter_car_brand.yaml
+│   ├── filter_car_color.yaml
+│   ├── filter_car_engine.yaml
+│   ├── filter_car_price.yaml  
+│   └── swagger_config.py      
+├── .dockerignore            
+├── .env                     
+├── .github/                 
+│   └── workflows/           
+│       └── main_Cars-microservice.yml 
+├── .gitignore               
+├── Dockerfile               
+├── README.md                
+├── requirements.txt
+```
+
 ## Endpoints
 
 ### **Homepoint**

@@ -34,6 +34,22 @@ project/
 
 ## Endpoints
 
+| HTTP Method | Action                        | Example Endpoint                        | Notes                                         |
+|-------------|-------------------------------|-----------------------------------------|----------------------------------------------|
+| `GET`       | Get all cars                  | `/cars`                                 | Retrives a list of all the cars              |
+| `POST`      | Add a new car                 | `/add-car`                              | Registers a new car in the database.         |
+| `DELETE`    | Delete a car                  | `/delete-car/<car_id>`                  | Deletes a car by its unique ID.              |
+| `GET`       | Get car details by ID         | `/car/<int:car_id>`                     | Retrieves details of a car by its ID.        |
+| `PUT`       | Update car rental status      | `/update-status/<int:car_id>`           | Toggles the `is_rented` status of a car.     |
+| `GET`       | List all rented cars          | `/rented-cars`                          | Retrieves a list of cars currently rented.   |
+| `GET`       | Get total price of rented cars| `/totalprice`                           | Calculates and returns the total rental price.|
+| `GET`       | Filter cars by brand          | `/brand-filter/<car_brand>`             | Retrieves cars matching a specific brand.    |
+| `GET`       | Filter cars by engine type    | `/engine-filter/<engine_type>`          | Retrieves cars with a specific engine type.  |
+| `GET`       | Filter cars by color          | `/color-filter/<color>`                 | Retrieves cars matching a specific color.    |
+| `GET`       | Filter cars by price range    | `/price-filter/<min_price>/<max_price>` | Retrieves cars within a specific price range.|
+
+
+
 ### **Homepoint**
 
 - **URL**: `/`
@@ -165,5 +181,28 @@ project/
 - **Description**: Retrieves a list of cars within a specified price range.
 - **Response**:
     - `200 OK`: Returns a list of cars that fall within the specified price range.
+  
+ ## Environment Variables
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `JWT_SECRET_KEY` | Yes | - | Secret key for JWT token generation |
+| `PORT` | No | 5000 | Port to run the service on |
+| `SQLITE_DB_PATH` | Yes | - | Path to SQLite database file |
+
+
+## Database
+
+The service uses SQLite for persistent user storage. The database schema is as follows:
+
+| Column      | Type      | Constraints          |
+|-------------|-----------|----------------------|
+| `car_id`        | INTEGER   | PRIMARY KEY AUTOINCREMENT |
+| `car_brand`     | TEXT      | NOT NULL      |
+| `car_model`| TEXT      | NOT NULL             |
+| `is_rented` | BOOLEAN      |              |
+| `price`  | INTEGER      |              |
+| `color`     | TEXT      | NOT NULL      |
+| `engine_type`     | TEXT      | NOT NULL      |
+| `milage`     | INTEGER      |      |
 
 

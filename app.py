@@ -15,7 +15,6 @@ app = Flask(__name__)
 
 #JWT Configuration
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-subscription_microservice_url = os.getenv('SUBSCRIPTION_MICROSERVICE')
 DB_PATH = os.getenv('SQLITE_DB_PATH')
 PORT = int(os.getenv('PORT', 5000))
 jwt = JWTManager(app)
